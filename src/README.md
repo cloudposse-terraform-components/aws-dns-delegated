@@ -5,7 +5,7 @@ tags:
   - provider/aws
 ---
 
-# Component: `dns`
+# Component: `dns-delegated`
 
 
 
