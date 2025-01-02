@@ -140,7 +140,6 @@ func TestComponent(t *testing.T) {
 				ValidationCertificateArn string `json:"validation_certificate_arn"`
 				ValidationId             string `json:"validation_id"`
 			}
-			// []interface{}{map[string]interface{}{"domain_name": "*.ygkxva.example-czc3n5.net", "resource_record_name": "_6b23f04661904162a9f39c79f0ba28e6.ygkxva.example-czc3n5.net.", "resource_record_type": "CNAME", "resource_record_value": "_b6e2b54cfe1568421b5f23b1b121201e.zfyfvmchrl.acm-validations.aws."}, map[string]interface{}{"domain_name": "ygkxva.example-czc3n5.net", "resource_record_name": "_6b23f04661904162a9f39c79f0ba28e6.ygkxva.example-czc3n5.net.", "resource_record_type": "CNAME", "resource_record_value": "_b6e2b54cfe1568421b5f23b1b121201e.zfyfvmchrl.acm-validations.aws."}}
 
 			type ssmParameter struct {
 				AllowedPattern string                 `json:"allowed_pattern"`
