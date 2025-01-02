@@ -6,6 +6,4 @@ components:
       vars: 
         zone_config:
           - subdomain: test
-						zone_name: example.net
-
-
+            zone_name: example.net
