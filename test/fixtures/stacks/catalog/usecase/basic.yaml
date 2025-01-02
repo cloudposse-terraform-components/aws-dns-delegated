@@ -1,0 +1,6 @@
+components:
+  terraform:
+    dns-delegated/basic:
+      metadata:
+        component: dns-delegated
+      vars: {}
