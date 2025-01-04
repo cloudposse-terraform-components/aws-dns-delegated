@@ -5,4 +5,3 @@ repository:
   description: '    This component is responsible for provisioning a DNS zone which manages subdomains delegated from a DNS zone in the primary DNS account'
   homepage: https://cloudposse.com/accelerate
   topics: terraform, terraform-component
-
