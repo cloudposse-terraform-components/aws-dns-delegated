@@ -30,9 +30,21 @@ spec:
       excluded_paths: []
 
     - component: "dns-delegated"
-      source: "../../src"
+      source: github.com/cloudposse-terraform-components/aws-dns-delegated.git//src?ref={{.Version}}
+      version: add-tests      
       targets:
         - "components/terraform/dns-delegated"
+      included_paths:
+        - "**/*.tf"
+        - "**/*.md"
+        - "**/*.tftmpl"
+        - "**/modules/**"
+      excluded_paths: []
+
+    - component: "acm"
+      source: "../../src"
+      targets:
+        - "components/terraform/acm"
       included_paths:
         - "**/*.tf"
         - "**/*.md"

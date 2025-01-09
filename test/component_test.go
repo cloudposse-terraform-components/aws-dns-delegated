@@ -33,6 +33,36 @@ type zone struct {
 	ZoneID string `json:"zone_id"`
 }
 
+type certificate struct {
+	Arn                     string `json:"arn"`
+	DomainValidationOptions [][]struct {
+		DomainName          string `json:"domain_name"`
+		ResourceRecordName  string `json:"resource_record_name"`
+		ResourceRecordType  string `json:"resource_record_type"`
+		ResourceRecordValue string `json:"resource_record_value"`
+	} `json:"domain_validation_options"`
+	Id                       string `json:"id"`
+	ValidationCertificateArn string `json:"validation_certificate_arn"`
+	ValidationId             string `json:"validation_id"`
+}
+
+type ssmParameter struct {
+	AllowedPattern string                 `json:"allowed_pattern"`
+	DataType       string                 `json:"data_type"`
+	Description    string                 `json:"description"`
+	Id             string                 `json:"id"`
+	InsecureValue  interface{}            `json:"insecure_value"`
+	KeyId          string                 `json:"key_id"`
+	Name           string                 `json:"name"`
+	Overwrite      bool                   `json:"overwrite"`
+	Tags           map[string]interface{} `json:"tags"`
+	TagsAll        map[string]interface{} `json:"tags_all"`
+	Tier           string                 `json:"tier"`
+	Type           string                 `json:"type"`
+	Value          string                 `json:"value"`
+	Version        int                    `json:"version"`
+}
+
 func TestComponent(t *testing.T) {
 	awsRegion := "us-east-2"
 
@@ -42,32 +72,9 @@ func TestComponent(t *testing.T) {
 	fixture.SetUp(&atmos.Options{})
 
 	fixture.Suite("default", func(t *testing.T, suite *helper.Suite) {
-		suite.Setup(t, func(t *testing.T, atm *helper.Atmos) {
-			randomID := suite.GetRandomIdentifier()
-			domainName := fmt.Sprintf("example-%s.net", randomID)
-			inputs := map[string]interface{}{
-				"domain_names": []string{domainName},
-			}
-			atm.GetAndDeploy("dns-primary", "default-test", inputs)
-		})
-
-		suite.TearDown(t, func(t *testing.T, atm *helper.Atmos) {
-			atm.GetAndDestroy("dns-primary", "default-test", map[string]interface{}{})
-		})
-
 		suite.Test(t, "basic", func(t *testing.T, atm *helper.Atmos) {
-			dnsPrimaryComponent := helper.NewAtmosComponent("dns-primary", "default-test", map[string]interface{}{})
-
-			primaryZones := map[string]zone{}
-			atm.OutputStruct(dnsPrimaryComponent, "zones", &primaryZones)
-
-			primaryDomains := make([]string, 0, len(primaryZones))
-			for k := range primaryZones {
-				primaryDomains = append(primaryDomains, k)
-			}
-
-			primaryDomainName := primaryDomains[0]
-			primaryZone := primaryZones[primaryDomainName]
+			primaryDomainName := "components.cptest.test-automation.app"
+			primaryZone, err := GetDNSZoneByNameE(t, primaryDomainName, awsRegion)
 
 			delegatedDomainName := suite.GetRandomIdentifier()
 
@@ -106,7 +113,7 @@ func TestComponent(t *testing.T) {
 			assert.Equal(t, delegatedRecordZoneNameDot, *delegatedNSRecord.Name)
 			assert.EqualValues(t, 172800, *delegatedNSRecord.TTL)
 
-			delegatedNSRecordInPrimaryZone := aws.GetRoute53Record(t, primaryZone.ZoneID, delegatedZone.Name, "NS", awsRegion)
+			delegatedNSRecordInPrimaryZone := aws.GetRoute53Record(t, *primaryZone.Id, delegatedZone.Name, "NS", awsRegion)
 			assert.Equal(t, delegatedRecordZoneNameDot, *delegatedNSRecordInPrimaryZone.Name)
 			assert.EqualValues(t, 30, *delegatedNSRecordInPrimaryZone.TTL)
 
@@ -128,35 +135,6 @@ func TestComponent(t *testing.T) {
 				assert.Equal(t, expected, exists)
 			}
 
-			type certificate struct {
-				Arn                     string `json:"arn"`
-				DomainValidationOptions [][]struct {
-					DomainName          string `json:"domain_name"`
-					ResourceRecordName  string `json:"resource_record_name"`
-					ResourceRecordType  string `json:"resource_record_type"`
-					ResourceRecordValue string `json:"resource_record_value"`
-				} `json:"domain_validation_options"`
-				Id                       string `json:"id"`
-				ValidationCertificateArn string `json:"validation_certificate_arn"`
-				ValidationId             string `json:"validation_id"`
-			}
-
-			type ssmParameter struct {
-				AllowedPattern string                 `json:"allowed_pattern"`
-				DataType       string                 `json:"data_type"`
-				Description    string                 `json:"description"`
-				Id             string                 `json:"id"`
-				InsecureValue  interface{}            `json:"insecure_value"`
-				KeyId          string                 `json:"key_id"`
-				Name           string                 `json:"name"`
-				Overwrite      bool                   `json:"overwrite"`
-				Tags           map[string]interface{} `json:"tags"`
-				TagsAll        map[string]interface{} `json:"tags_all"`
-				Tier           string                 `json:"tier"`
-				Type           string                 `json:"type"`
-				Value          string                 `json:"value"`
-				Version        int                    `json:"version"`
-			}
 			acmSsmParameter := map[string]ssmParameter{}
 			atm.OutputStruct(dnsDelegatedComponent, "acm_ssm_parameter", &acmSsmParameter)
 			ssmParametersForDomain := acmSsmParameter[delegatedDomainName]
@@ -177,9 +155,24 @@ func TestComponent(t *testing.T) {
 			require.NoError(t, err)
 
 			// We can not test issue status because DNS validation not working with mock primary domain
-			// assert.Equal(t, "ISSUED", *awsCertificate.Certificate.Status)
+			assert.Equal(t, "ISSUED", *awsCertificate.Certificate.Status)
 			assert.Equal(t, "AMAZON_ISSUED", *awsCertificate.Certificate.Type)
-
 		})
 	})
+}
+
+func GetDNSZoneByNameE(t *testing.T, hostName string, awsRegion string) (*route53.HostedZone, error) {
+	client, err := aws.NewRoute53ClientE(t, awsRegion)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := client.ListHostedZonesByName(&route53.ListHostedZonesByNameInput{DNSName: &hostName})
+	if err != nil {
+		return nil, err
+	}
+	if len(response.HostedZones) == 0 {
+		return nil, fmt.Errorf("no hosted zones found for %s", hostName)
+	}
+	return response.HostedZones[0], nil
 }
