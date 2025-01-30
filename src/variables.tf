@@ -11,6 +11,18 @@ variable "zone_config" {
   }))
 }
 
+variable "record_config" {
+  description = "DNS Record config"
+  type = list(object({
+    root_zone = string
+    name      = string
+    type      = string
+    ttl       = string
+    records   = list(string)
+  }))
+  default = []
+}
+
 variable "aws_shield_protection_enabled" {
   description = "Enable or disable AWS Shield Advanced protection for Route53 Zones. If set to 'true', a subscription to AWS Shield Advanced must exist in this account."
   type        = bool
