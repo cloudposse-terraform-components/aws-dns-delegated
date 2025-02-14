@@ -1,6 +1,6 @@
 components:
   terraform:
-    dns-delegated/basic:
+    dns-delegated/disabled:
       metadata:
         component: target
       vars: 

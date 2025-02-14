@@ -5,12 +5,12 @@ output "zones" {
 
 output "default_domain_name" {
   description = "Default root domain name (e.g. dev.example.net) for the cluster"
-  value       = join(".", [var.zone_config[0].subdomain, var.zone_config[0].zone_name])
+  value       = local.enabled ? join(".", [var.zone_config[0].subdomain, var.zone_config[0].zone_name]) : null
 }
 
 output "default_dns_zone_id" {
   description = "Default root DNS zone ID for the cluster"
-  value       = local.aws_route53_zone[var.zone_config[0].subdomain].zone_id
+  value       = local.enabled ? local.aws_route53_zone[var.zone_config[0].subdomain].zone_id : null
 }
 
 output "route53_hosted_zone_protections" {

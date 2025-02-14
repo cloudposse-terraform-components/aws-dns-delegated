@@ -1,6 +1,6 @@
 locals {
   enabled  = module.this.enabled
-  zone_map = zipmap(var.zone_config[*].subdomain, var.zone_config[*].zone_name)
+  zone_map = local.enabled ? zipmap(var.zone_config[*].subdomain, var.zone_config[*].zone_name) : {}
 
   private_enabled = local.enabled && var.dns_private_zone_enabled
   public_enabled  = local.enabled && !local.private_enabled
