@@ -86,6 +86,6 @@ variable "dns_soa_config" {
     - 1209600 ; expire time in seconds (1209600 is 2 weeks) for secondary DNS servers to remove SOA record if they cannot refresh it
     - 60 ; nxdomain TTL, or time in seconds for secondary DNS servers to cache negative responses
     See [SOA Record Documentation](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/SOA-NSrecords.html) for more information.
-   EOT
+  EOT
   default     = "awsdns-hostmaster.amazon.com. 1 7200 900 1209600 60"
 }

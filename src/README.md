@@ -16,18 +16,18 @@ account. The primary DNS zone is expected to already be provisioned via
 [the `dns-primary` component](https://github.com/cloudposse/terraform-aws-components/tree/main/modules/dns-primary).
 
 If you are deploying a root zone (e.g `example.com`) rather than a subdomain delegated from a root zone (e.g `prod.example.com`),
-and only a single account needs to manage or update the zone you are deploying, then you should use `dns-primary` instead to deploy 
-that root zone into the target account. See 
+and only a single account needs to manage or update the zone you are deploying, then you should use `dns-primary` instead to deploy
+that root zone into the target account. See
 [Why not use dns-delegated for all vanity domains?](https://docs.cloudposse.com/layers/network/faq/#why-not-use-dns-delegated-for-all-vanity-domains)
 for more details on that.
 
 This component also provisions a wildcard ACM certificate for the given subdomain.
 
-This component should only be deployed globally, which is to say once per account. See 
+This component should only be deployed globally, which is to say once per account. See
 [Why should the dns-delegated component be deployed globally rather than regionally?](https://docs.cloudposse.com/layers/network/faq/#why-should-the-dns-delegated-component-be-deployed-globally-rather-than-regionally)
-for details on why. 
+for details on why.
 
-Note that once you delegate a subdomain (e.g. `prod.example.com`) to an account, that 
+Note that once you delegate a subdomain (e.g. `prod.example.com`) to an account, that
 account can deploy multiple levels of sub-subdomains (e.g. `api.use1.prod.example.com`) without further configuration,
 although you will need to create additional TLS certificates, as the wildcard in a wildcard TLS certificate
 only matches a single level. You can use [our `acm` component](https://github.com/cloudposse/terraform-aws-components/tree/readme-global-only/modules/acm)
@@ -148,7 +148,7 @@ b.a.example.com. 172800 IN NS ns-338.awsdns-42.com.
 This configuration creates two discrete possible resolution paths.
 
 1. If a resolver directly queries the `example.com` nameservers for `c.b.a.example.com`, it will receive the second set
-   of nameservers.
+  of nameservers.
 
 2. If a resolver queries `example.com` for `a.example.com`, it will receive the first set of nameservers.
 
@@ -167,7 +167,7 @@ Cloudflare DNS at `1.1.1.1` (strategy 2). You should verify that both DNS server
 Takeaway
 
 1. In order to ensure DNS resolution is consistent no matter the resolver, it is important to always create NS
-   delegations only authoritative zones.
+  delegations only authoritative zones.
 
 <!-- prettier-ignore-start -->
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -224,7 +224,7 @@ Takeaway
 | <a name="input_certificate_authority_stage_name"></a> [certificate\_authority\_stage\_name](#input\_certificate\_authority\_stage\_name) | Use this stage name to read from the remote state to get the certificate\_authority\_arn if using an authority type of SUBORDINATE | `string` | `null` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br/>See description of individual variables for details.<br/>Leave string and numeric variables as `null` to use default value.<br/>Individual variable settings (non-null) override settings in context object,<br/>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br/>  "additional_tag_map": {},<br/>  "attributes": [],<br/>  "delimiter": null,<br/>  "descriptor_formats": {},<br/>  "enabled": true,<br/>  "environment": null,<br/>  "id_length_limit": null,<br/>  "label_key_case": null,<br/>  "label_order": [],<br/>  "label_value_case": null,<br/>  "labels_as_tags": [<br/>    "unset"<br/>  ],<br/>  "name": null,<br/>  "namespace": null,<br/>  "regex_replace_chars": null,<br/>  "stage": null,<br/>  "tags": {},<br/>  "tenant": null<br/>}</pre> | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between ID elements.<br/>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
-| <a name="input_descriptor_formats"></a> [descriptor\_formats](#input\_descriptor\_formats) | Describe additional descriptors to be output in the `descriptors` output map.<br/>Map of maps. Keys are names of descriptors. Values are maps of the form<br/>`{<br/>   format = string<br/>   labels = list(string)<br/>}`<br/>(Type is `any` so the map values can later be enhanced to provide additional options.)<br/>`format` is a Terraform format string to be passed to the `format()` function.<br/>`labels` is a list of labels, in order, to pass to `format()` function.<br/>Label values will be normalized before being passed to `format()` so they will be<br/>identical to how they appear in `id`.<br/>Default is `{}` (`descriptors` output will be empty). | `any` | `{}` | no |
+| <a name="input_descriptor_formats"></a> [descriptor\_formats](#input\_descriptor\_formats) | Describe additional descriptors to be output in the `descriptors` output map.<br/>Map of maps. Keys are names of descriptors. Values are maps of the form<br/>`{<br/>  format = string<br/>  labels = list(string)<br/>}`<br/>(Type is `any` so the map values can later be enhanced to provide additional options.)<br/>`format` is a Terraform format string to be passed to the `format()` function.<br/>`labels` is a list of labels, in order, to pass to `format()` function.<br/>Label values will be normalized before being passed to `format()` so they will be<br/>identical to how they appear in `id`.<br/>Default is `{}` (`descriptors` output will be empty). | `any` | `{}` | no |
 | <a name="input_dns_private_zone_enabled"></a> [dns\_private\_zone\_enabled](#input\_dns\_private\_zone\_enabled) | Whether to set the zone to public or private | `bool` | `false` | no |
 | <a name="input_dns_soa_config"></a> [dns\_soa\_config](#input\_dns\_soa\_config) | Root domain name DNS SOA record:<br/>- awsdns-hostmaster.amazon.com. ; AWS default value for administrator email address<br/>- 1 ; serial number, not used by AWS<br/>- 7200 ; refresh time in seconds for secondary DNS servers to refresh SOA record<br/>- 900 ; retry time in seconds for secondary DNS servers to retry failed SOA record update<br/>- 1209600 ; expire time in seconds (1209600 is 2 weeks) for secondary DNS servers to remove SOA record if they cannot refresh it<br/>- 60 ; nxdomain TTL, or time in seconds for secondary DNS servers to cache negative responses<br/>See [SOA Record Documentation](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/SOA-NSrecords.html) for more information. | `string` | `"awsdns-hostmaster.amazon.com. 1 7200 900 1209600 60"` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
