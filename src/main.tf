@@ -1,6 +1,6 @@
 locals {
   enabled  = module.this.enabled
-  zone_map = zipmap(var.zone_config[*].subdomain, var.zone_config[*].zone_name)
+  zone_map = local.enabled ? zipmap(var.zone_config[*].subdomain, var.zone_config[*].zone_name) : {}
 
   private_enabled = local.enabled && var.dns_private_zone_enabled
   public_enabled  = local.enabled && !local.private_enabled
@@ -11,7 +11,7 @@ locals {
 
   vpc_environment_names = toset(concat([var.vpc_primary_environment_name], var.vpc_secondary_environment_names))
 
-  aws_partition = join("", data.aws_partition.current.*.partition)
+  aws_partition = join("", data.aws_partition.current[*].partition)
 }
 
 resource "aws_route53_zone" "default" {
@@ -61,7 +61,7 @@ module "utils" {
 resource "aws_route53_zone_association" "secondary" {
   for_each = local.private_enabled && length(var.vpc_secondary_environment_names) > 0 ? toset(var.vpc_secondary_environment_names) : toset([])
 
-  zone_id    = join("", local.aws_route53_zone.*.zone_id)
+  zone_id    = join("", local.aws_route53_zone[*].zone_id)
   vpc_id     = module.vpc[each.value].outputs.vpc_id
   vpc_region = module.utils.region_az_alt_code_maps[format("from_%s", var.vpc_region_abbreviation_type)][each.value]
 }
