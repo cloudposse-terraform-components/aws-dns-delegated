@@ -4,7 +4,7 @@ module "vpc" {
 
   for_each = local.private_enabled ? local.vpc_environment_names : toset([])
 
-  component   = "vpc"
+  component   = var.vpc_component_name
   environment = each.value
 
   context = module.this.context
