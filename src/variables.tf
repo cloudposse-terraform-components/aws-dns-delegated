@@ -89,3 +89,9 @@ variable "dns_soa_config" {
   EOT
   default     = "awsdns-hostmaster.amazon.com. 1 7200 900 1209600 60"
 }
+
+variable "vpc_component_name" {
+  type        = string
+  description = "The name of a VPC component"
+  default     = "vpc"
+}
