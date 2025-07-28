@@ -242,6 +242,7 @@ Takeaway
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br/>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
+| <a name="input_vpc_component_name"></a> [vpc\_component\_name](#input\_vpc\_component\_name) | The name of a VPC component | `string` | `"vpc"` | no |
 | <a name="input_vpc_primary_environment_name"></a> [vpc\_primary\_environment\_name](#input\_vpc\_primary\_environment\_name) | The name of the environment where primary VPC is deployed | `string` | `null` | no |
 | <a name="input_vpc_region_abbreviation_type"></a> [vpc\_region\_abbreviation\_type](#input\_vpc\_region\_abbreviation\_type) | Type of VPC abbreviation (either `fixed` or `short`) to use in names. See https://github.com/cloudposse/terraform-aws-utils for details. | `string` | `"fixed"` | no |
 | <a name="input_vpc_secondary_environment_names"></a> [vpc\_secondary\_environment\_names](#input\_vpc\_secondary\_environment\_names) | The names of the environments where secondary VPCs are deployed | `list(string)` | `[]` | no |
