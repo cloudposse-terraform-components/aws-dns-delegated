@@ -7,8 +7,9 @@ aws-assumed-role/
 *.iml
 .direnv
 .envrc
-.cache 
-state
+.cache
+.atmos
+
 # Compiled and auto-generated files
 # Note that the leading "**/" appears necessary for Docker even if not for Git
 
