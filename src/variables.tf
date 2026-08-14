@@ -95,3 +95,9 @@ variable "vpc_component_name" {
   description = "The name of a VPC component"
   default     = "vpc"
 }
+
+variable "force_destroy" {
+  type        = bool
+  description = "Whether to force destroy the Route53 hosted zone and all records inside it upon deletion."
+  default     = false
+}
