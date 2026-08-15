@@ -17,9 +17,9 @@ locals {
 resource "aws_route53_zone" "default" {
   for_each = local.public_enabled ? local.zone_map : {}
 
-  name    = format("%s.%s", each.key, each.value)
-  comment = format("DNS zone for %s.%s", each.key, each.value)
-
+  name          = format("%s.%s", each.key, each.value)
+  comment       = format("DNS zone for %s.%s", each.key, each.value)
+  force_destroy = var.force_destroy
 
   tags = module.this.tags
 }
@@ -27,9 +27,9 @@ resource "aws_route53_zone" "default" {
 resource "aws_route53_zone" "private" {
   for_each = local.private_enabled ? local.zone_map : {}
 
-  name    = format("%s.%s", each.key, each.value)
-  comment = format("DNS zone for %s.%s", each.key, each.value)
-
+  name          = format("%s.%s", each.key, each.value)
+  comment       = format("DNS zone for %s.%s", each.key, each.value)
+  force_destroy = var.force_destroy
   # The reason why this isn't in the original route53 zone is because this shows up as an update
   # when the aws provider should replace it. Using a separate resource allows the user to toggle
   # between private and public without manual targeted destroys.
