@@ -94,7 +94,11 @@ resource "aws_route53_record" "soa" {
 }
 
 data "aws_route53_zone" "root_zone" {
-  for_each = local.enabled ? local.zone_map : {}
+  # Looking the parent zone up, and writing NS records into it, both assume the parent zone lives
+  # in the account aws.primary targets. Set create_root_delegation = false when it does not and
+  # the delegation is managed elsewhere. aws_route53_record.root_ns iterates this data source, so
+  # gating here disables the records too.
+  for_each = local.enabled && var.create_root_delegation ? local.zone_map : {}
   provider = aws.primary
 
   name         = format("%s.", each.value)

@@ -101,3 +101,13 @@ variable "force_destroy" {
   description = "Whether to force destroy the Route53 hosted zone and all records inside it upon deletion."
   default     = false
 }
+
+variable "create_root_delegation" {
+  type        = bool
+  default     = true
+  description = <<-EOT
+    Whether to look up the parent zone through the `aws.primary` provider and create NS delegation
+    records in it. Set to `false` when the parent zone is not in the account `aws.primary` targets,
+    for example when the delegation is managed outside this component.
+    EOT
+}
